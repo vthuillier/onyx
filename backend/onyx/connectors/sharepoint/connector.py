@@ -279,7 +279,10 @@ class SharepointConnector(LoadConnector, PollConnector):
             driveitems = self._fetch_driveitems(site_descriptor, start=start, end=end)
             for driveitem, drive_name in driveitems:
                 logger.debug(f"Processing: {driveitem.web_url}")
-                doc_batch.append(_convert_driveitem_to_document(driveitem, drive_name))
+                converted = _convert_driveitem_to_document(driveitem, drive_name)
+                if converted is None:
+                    continue
+                doc_batch.append(converted)
 
                 if len(doc_batch) >= self.batch_size:
                     yield doc_batch
