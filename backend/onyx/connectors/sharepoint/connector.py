@@ -50,8 +50,12 @@ def _convert_driveitem_to_document(
     driveitem: DriveItem,
     drive_name: str,
 ) -> Document:
+    file = driveitem.get_content().execute_query().value
+    if type(file) is list:
+        logger.warning(f"Skipping unsupported item: {driveitem.web_url}")
+        return None
     file_text = extract_file_text(
-        file=io.BytesIO(driveitem.get_content().execute_query().value),
+        file=io.BytesIO(file),
         file_name=driveitem.name,
         break_on_unprocessable=False,
     )
