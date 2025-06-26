@@ -50,7 +50,12 @@ def _convert_driveitem_to_document(
     driveitem: DriveItem,
     drive_name: str,
 ) -> Document:
-    file = driveitem.get_content().execute_query().value
+    try:
+        file = driveitem.get_content().execute_query().value
+    except Exception as e:
+        err_str = str(e)[:1024]
+        logger.warning(f"Failed to fetch content for {driveitem.web_url}: {err_str}")
+        return None
     if not isinstance(file, bytes):
         logger.warning(f"Skipping unsupported item: {driveitem.web_url}")
         return None
